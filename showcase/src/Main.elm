@@ -7,7 +7,9 @@ import Astryx.Badge as Badge
 import Astryx.Banner as Banner
 import Astryx.Breadcrumbs as Breadcrumbs
 import Astryx.Button as Button
+import Astryx.Calendar as Calendar
 import Astryx.Card as Card
+import Astryx.Carousel as Carousel
 import Astryx.Center as Center
 import Astryx.Collapsible as Collapsible
 import Astryx.ContextMenu as ContextMenu
@@ -42,6 +44,7 @@ import Astryx.Theme as Theme
 import Astryx.Toast as Toast
 import Astryx.Tooltip as Tooltip
 import Astryx.TopNav as TopNav
+import Astryx.Typeahead as Typeahead
 import Browser
 import Html exposing (Html, button, code, nav, section, span, text)
 import Html.Attributes as Attr
@@ -156,8 +159,67 @@ view model =
             , settingsPage model
             , applicationStructure model
             , overlayExamples model
+            , compositeExamples model
             ]
         , Toast.view ToastMsg [] model.toasts
+        ]
+
+
+compositeExamples : Model -> Html Msg
+compositeExamples model =
+    demo "Composite inputs"
+        [ Typeahead.view
+            { key = "people"
+            , label = "Find a person"
+            , query = model.name
+            , options =
+                [ { value = "Ada Lovelace", label = "Ada Lovelace", disabled = False }
+                , { value = "Grace Hopper", label = "Grace Hopper", disabled = False }
+                , { value = "Margaret Hamilton", label = "Margaret Hamilton", disabled = False }
+                ]
+            , open = True
+            , active = Just 0
+            , disabled = False
+            , error = Nothing
+            , onQuery = SetName
+            , onSelect = SetName
+            , attributes = []
+            }
+        , Calendar.view
+            { label = "July 2026"
+            , previousLabel = "Previous month"
+            , nextLabel = "Next month"
+            , days =
+                List.repeat 3 Nothing
+                    ++ List.map
+                        (\day ->
+                            Just
+                                { value = day
+                                , label = String.fromInt day
+                                , accessibleLabel = "July " ++ String.fromInt day ++ ", 2026"
+                                , selected = model.page == day
+                                , today = day == 4
+                                , disabled = False
+                                }
+                        )
+                        (List.range 1 14)
+            , onPrevious = SetPage (model.page - 1)
+            , onNext = SetPage (model.page + 1)
+            , onSelect = SetPage
+            , attributes = []
+            }
+        , Carousel.view
+            { label = "Product tour"
+            , slides =
+                [ { label = "Overview", content = [ text "Controlled selection and navigation." ] }
+                , { label = "Details", content = [ text "Responsive and reduced-motion styles are inherited." ] }
+                ]
+            , current = model.page - 1
+            , previousLabel = "Previous slide"
+            , nextLabel = "Next slide"
+            , onChange = \index -> SetPage (index + 1)
+            , attributes = []
+            }
         ]
 
 

@@ -75,6 +75,8 @@ external JavaScript. Unsupported browser behavior is documented explicitly.
 
 ## Phase 6: composite inputs
 
+Status: complete.
+
 - Typeahead, Selector, MultiSelector, and CommandPalette.
 - Calendar and date/time input families.
 - Carousel and Lightbox.
