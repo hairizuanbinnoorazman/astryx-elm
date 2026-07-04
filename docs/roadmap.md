@@ -6,17 +6,18 @@ changing substantially.
 
 ## Phase 1: scope and contracts
 
-Status: documented.
+Status: complete.
 
 - Establish the Elm-native dependency policy: community Elm packages are
   permitted; imported JavaScript and npm runtime packages are not.
 - Inventory and prioritize Astryx components.
 - Define Elm API, theming, accessibility, and testing conventions.
-- Confirm the initial package name and browser support before publishing an
-  `elm.json`, because Elm package names and exposed APIs become compatibility
-  commitments.
+- Confirm the initial package name as `hairizuanbinnoorazman/astryx-elm` and
+  target current evergreen desktop and mobile browsers. Publishing `elm.json`
+  remains a Phase 2 action because exposed APIs are compatibility commitments.
 
-Exit gate: the documents in this directory are accepted as the port boundary.
+Exit gate: complete. The root README and documents in this directory define the
+accepted port boundary.
 
 ## Phase 2: package foundation
 

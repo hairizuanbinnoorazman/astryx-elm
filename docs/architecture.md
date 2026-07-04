@@ -1,5 +1,16 @@
 # Architecture
 
+## Package and compatibility contract
+
+The intended published package name is
+`hairizuanbinnoorazman/astryx-elm`. Publishing the first `elm.json` remains a
+Phase 2 action, when its initial exposed modules and exact dependencies exist.
+
+The package targets current evergreen desktop and mobile browsers. Components
+prefer semantic HTML and progressive enhancement. Any component that requires
+a narrower browser capability must document the requirement and its fallback;
+the package does not add a hidden JavaScript compatibility layer.
+
 ## Dependency policy
 
 The published package may use official and community Elm packages. Dependencies
