@@ -20,6 +20,9 @@ does not mean recreating maintained community Elm packages without cause.
 - [Phased roadmap](roadmap.md) gives release gates and implementation order.
 - [Specialized package evaluation](specialized-packages.md) records the Phase 7
   admission criteria and domain-package boundary.
+- [Showcase templates session plan](showcase-templates-session-plan.md) evaluates
+  the current library against the Login and Tools designs in the Astryx
+  templates gallery, one template at a time.
 
 ## Reference projects
 
