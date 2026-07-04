@@ -3,7 +3,7 @@
 An Elm-native interpretation of the Astryx design system for building
 consistent, accessible application interfaces.
 
-> **Project status:** Phase 3 essential controls and feedback complete.
+> **Project status:** Phase 4 application structure complete.
 
 ## Goal
 
@@ -18,12 +18,14 @@ provide a clear benefit and preserve Elm package guarantees.
 
 ## Available functionality
 
-The package exposes the foundations and essential application controls:
+The package exposes the foundations, essential controls, and application structure:
 
 - semantic theme tokens with light and dark themes
 - layout and typography foundations
 - accessibility, size, status, and consumer-provided icon contracts
 - buttons, links, forms, cards, status indicators, banners, and progress feedback
+- lists, tables, tabs, pagination, breadcrumbs, and loading/empty states
+- responsive application navigation plus collapsible and toast state machines
 
 Later phases add controls and application components, including:
 

@@ -1,11 +1,15 @@
 module Main exposing (main)
 
 import Astryx.Accessibility as Accessibility
+import Astryx.AppShell as AppShell
 import Astryx.Badge as Badge
 import Astryx.Banner as Banner
+import Astryx.Breadcrumbs as Breadcrumbs
 import Astryx.Button as Button
 import Astryx.Card as Card
 import Astryx.Center as Center
+import Astryx.Collapsible as Collapsible
+import Astryx.EmptyState as EmptyState
 import Astryx.Form.Checkbox as Checkbox
 import Astryx.Form.Field as Field
 import Astryx.Form.Layout as FormLayout
@@ -15,13 +19,22 @@ import Astryx.Form.TextInput as TextInput
 import Astryx.Grid as Grid
 import Astryx.Heading as Heading
 import Astryx.Icon as Icon
+import Astryx.Item as Item
+import Astryx.Pagination as Pagination
 import Astryx.Progress as Progress
+import Astryx.SegmentedControl as SegmentedControl
+import Astryx.SideNav as SideNav
 import Astryx.Size as Size
+import Astryx.Skeleton as Skeleton
 import Astryx.Stack as Stack
 import Astryx.Status as Status
 import Astryx.StatusDot as StatusDot
+import Astryx.Table as Table
+import Astryx.Tabs as Tabs
 import Astryx.Text as Text
 import Astryx.Theme as Theme
+import Astryx.Toast as Toast
+import Astryx.TopNav as TopNav
 import Browser
 import Html exposing (Html, button, code, nav, section, span, text)
 import Html.Attributes as Attr
@@ -29,7 +42,7 @@ import Html.Events as Events
 
 
 type alias Model =
-    { dark : Bool, name : String, email : String, bio : String, role : String, alerts : Bool, saved : Bool }
+    { dark : Bool, name : String, email : String, bio : String, role : String, alerts : Bool, saved : Bool, tab : String, page : Int, details : Collapsible.State, toasts : Toast.State }
 
 
 type Msg
@@ -40,11 +53,15 @@ type Msg
     | SetRole String
     | SetAlerts Bool
     | Save
+    | SelectTab String
+    | SetPage Int
+    | DetailsMsg Collapsible.Msg
+    | ToastMsg Toast.Msg
 
 
 main : Program () Model Msg
 main =
-    Browser.sandbox { init = { dark = False, name = "", email = "", bio = "", role = "", alerts = True, saved = False }, update = update, view = view }
+    Browser.sandbox { init = { dark = False, name = "", email = "", bio = "", role = "", alerts = True, saved = False, tab = "people", page = 1, details = Collapsible.init False, toasts = Toast.init }, update = update, view = view }
 
 
 update : Msg -> Model -> Model
@@ -69,7 +86,19 @@ update message model =
             { model | alerts = value, saved = False }
 
         Save ->
-            { model | saved = True }
+            { model | saved = True, toasts = Toast.add { id = "saved", title = "Profile saved", message = "Your changes are available now." } model.toasts }
+
+        SelectTab value ->
+            { model | tab = value }
+
+        SetPage value ->
+            { model | page = value }
+
+        DetailsMsg childMsg ->
+            { model | details = Collapsible.update childMsg model.details }
+
+        ToastMsg childMsg ->
+            { model | toasts = Toast.update childMsg model.toasts }
 
 
 view : Model -> Html Msg
@@ -106,7 +135,9 @@ view model =
             , demo "Icon" [ Icon.view (Icon.labelled "Favorite" (span [] [ text "★" ])) ]
             , validatedForm model
             , settingsPage model
+            , applicationStructure model
             ]
+        , Toast.view ToastMsg [] model.toasts
         ]
 
 
@@ -185,6 +216,51 @@ settingsPage model =
             , attributes = []
             }
         ]
+
+
+applicationStructure : Model -> Html Msg
+applicationStructure model =
+    demo "CRUD application structure"
+        [ Breadcrumbs.view [] [ { label = "Home", url = Just "#" }, { label = "People", url = Nothing } ]
+        , Tabs.view
+            { key = "directory"
+            , selected = model.tab
+            , onSelect = SelectTab
+            , attributes = []
+            , tabs =
+                [ { id = "people", label = "People", disabled = False, panel = [ peopleTable ] }
+                , { id = "empty", label = "Empty state", disabled = False, panel = [ EmptyState.view { title = "No archived people", description = "Archived records will appear here.", illustration = [ text "◇" ], actions = [ Button.view [ Button.primary ] [] [ text "Add person" ] ], attributes = [] } ] }
+                , { id = "loading", label = "Loading", disabled = False, panel = [ Skeleton.text [], Skeleton.block [ Attr.style "margin-top" "0.75rem" ] ] }
+                ]
+            }
+        , SegmentedControl.view { label = "Density", value = "comfortable", options = [ { value = "compact", label = "Compact", disabled = False }, { value = "comfortable", label = "Comfortable", disabled = False } ], onChange = \_ -> SelectTab model.tab, attributes = [] }
+        , Item.list []
+            [ Item.view { leading = [ text "AH" ], content = [ text "Ada Hamilton" ], trailing = [ Badge.view Status.Success [] [ text "Active" ] ], attributes = [] }
+            , Item.view { leading = [ text "GT" ], content = [ text "Grace Turing" ], trailing = [ Badge.view Status.Info [] [ text "Invited" ] ], attributes = [] }
+            ]
+        , Pagination.view { page = model.page, pageCount = 3, onChange = SetPage, attributes = [] }
+        , Collapsible.view { key = "audit", label = "Audit details", state = model.details, onChange = DetailsMsg, content = [ text "Created today by the showcase user." ], attributes = [] }
+        , AppShell.view
+            { top = [ TopNav.view { brand = [ text "Acme" ], links = [ text "Directory" ], actions = [ text "Account" ], attributes = [] } ]
+            , navigation = [ SideNav.view { label = "Workspace", items = [ { label = "People", url = "#", current = True }, { label = "Settings", url = "#", current = False } ], attributes = [] } ]
+            , content = [ text "Responsive shell preview" ]
+            , attributes = [ Attr.style "min-height" "16rem", Attr.style "border" "1px solid var(--astryx-border)" ]
+            }
+        ]
+
+
+peopleTable : Html msg
+peopleTable =
+    Table.view
+        { caption = "People"
+        , columns =
+            [ { heading = "Name", view = \person -> text person.name }
+            , { heading = "Role", view = \person -> text person.role }
+            ]
+        , rows = [ { id = "1", name = "Ada Hamilton", role = "Administrator" }, { id = "2", name = "Grace Turing", role = "Member" } ]
+        , rowKey = .id
+        , attributes = []
+        }
 
 
 demo : String -> List (Html msg) -> Html msg

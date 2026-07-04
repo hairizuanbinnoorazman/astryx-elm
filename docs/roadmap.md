@@ -49,6 +49,8 @@ settings/detail page; keyboard and accessible-name checks pass.
 
 ## Phase 4: application structure
 
+Status: complete.
+
 - Item/List, Table, Tabs, SegmentedControl.
 - Breadcrumbs, Pagination, EmptyState, Skeleton.
 - Collapsible and Toast with explicit Elm state machines.
