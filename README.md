@@ -3,8 +3,7 @@
 An Elm-native interpretation of the Astryx design system for building
 consistent, accessible application interfaces.
 
-> **Project status:** Phase 2 foundation complete. Theme, accessibility,
-> layout, typography, size, status, and icon modules are available.
+> **Project status:** Phase 3 essential controls and feedback complete.
 
 ## Goal
 
@@ -19,11 +18,12 @@ provide a clear benefit and preserve Elm package guarantees.
 
 ## Available functionality
 
-The package currently exposes the Phase 2 foundations:
+The package exposes the foundations and essential application controls:
 
 - semantic theme tokens with light and dark themes
 - layout and typography foundations
 - accessibility, size, status, and consumer-provided icon contracts
+- buttons, links, forms, cards, status indicators, banners, and progress feedback
 
 Later phases add controls and application components, including:
 

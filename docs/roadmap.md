@@ -35,6 +35,8 @@ foundation modules, and the package has no JavaScript/npm runtime dependency.
 
 ## Phase 3: essential controls and feedback
 
+Status: complete.
+
 Implement Priority 1 in dependency order:
 
 1. Button, Link, Divider, Badge, StatusDot.
