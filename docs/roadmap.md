@@ -21,6 +21,8 @@ accepted port boundary.
 
 ## Phase 2: package foundation
 
+Status: complete.
+
 - Create the Elm package and test project.
 - Implement semantic theme tokens and a neutral light/dark theme.
 - Implement shared attribute handling, accessibility helpers, sizes, status,

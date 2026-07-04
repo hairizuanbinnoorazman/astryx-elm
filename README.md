@@ -3,8 +3,8 @@
 An Elm-native interpretation of the Astryx design system for building
 consistent, accessible application interfaces.
 
-> **Project status:** design and planning. The public API and components are not
-> implemented yet.
+> **Project status:** Phase 2 foundation complete. Theme, accessibility,
+> layout, typography, size, status, and icon modules are available.
 
 ## Goal
 
@@ -19,21 +19,38 @@ provide a clear benefit and preserve Elm package guarantees.
 
 ## Available functionality
 
-No components are available for application use yet. Phase 1 establishes the
-scope and contracts that implementation will follow:
+The package currently exposes the Phase 2 foundations:
 
 - semantic theme tokens with light and dark themes
 - layout and typography foundations
+- accessibility, size, status, and consumer-provided icon contracts
+
+Later phases add controls and application components, including:
+
 - buttons, links, form controls, cards, status, and feedback components
 - application structure including tables, navigation, tabs, and pagination
 - explicit Elm state machines for interactive components
 - accessible HTML, keyboard behavior, focus handling, and reduced motion
-- package documentation, unit tests, rendered HTML tests, and browser tests
 
 Overlays, composite inputs, and specialized components are intentionally later
 work because they require more extensive focus, keyboard, and browser behavior.
 See the [component priorities](docs/critical-ui-elements.md) for the full
 inventory.
+
+## Minimal example
+
+```elm
+import Astryx.Heading as Heading
+import Astryx.Stack as Stack
+import Astryx.Theme as Theme
+import Html exposing (text)
+
+Theme.root Theme.light []
+    [ Theme.stylesheet
+    , Stack.view [ Stack.space "1rem" ] []
+        [ Heading.view Heading.h1 [] [ text "Settings" ] ]
+    ]
+```
 
 ## Design principles
 
