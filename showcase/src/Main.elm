@@ -1,6 +1,7 @@
 module Main exposing (main)
 
 import Astryx.Accessibility as Accessibility
+import Astryx.AlertDialog as AlertDialog
 import Astryx.AppShell as AppShell
 import Astryx.Badge as Badge
 import Astryx.Banner as Banner
@@ -9,6 +10,9 @@ import Astryx.Button as Button
 import Astryx.Card as Card
 import Astryx.Center as Center
 import Astryx.Collapsible as Collapsible
+import Astryx.ContextMenu as ContextMenu
+import Astryx.Dialog as Dialog
+import Astryx.DropdownMenu as DropdownMenu
 import Astryx.EmptyState as EmptyState
 import Astryx.Form.Checkbox as Checkbox
 import Astryx.Form.Field as Field
@@ -20,7 +24,9 @@ import Astryx.Grid as Grid
 import Astryx.Heading as Heading
 import Astryx.Icon as Icon
 import Astryx.Item as Item
+import Astryx.Layer as Layer
 import Astryx.Pagination as Pagination
+import Astryx.Popover as Popover
 import Astryx.Progress as Progress
 import Astryx.SegmentedControl as SegmentedControl
 import Astryx.SideNav as SideNav
@@ -34,6 +40,7 @@ import Astryx.Tabs as Tabs
 import Astryx.Text as Text
 import Astryx.Theme as Theme
 import Astryx.Toast as Toast
+import Astryx.Tooltip as Tooltip
 import Astryx.TopNav as TopNav
 import Browser
 import Html exposing (Html, button, code, nav, section, span, text)
@@ -42,7 +49,7 @@ import Html.Events as Events
 
 
 type alias Model =
-    { dark : Bool, name : String, email : String, bio : String, role : String, alerts : Bool, saved : Bool, tab : String, page : Int, details : Collapsible.State, toasts : Toast.State }
+    { dark : Bool, name : String, email : String, bio : String, role : String, alerts : Bool, saved : Bool, tab : String, page : Int, details : Collapsible.State, toasts : Toast.State, layers : Layer.State }
 
 
 type Msg
@@ -57,11 +64,14 @@ type Msg
     | SetPage Int
     | DetailsMsg Collapsible.Msg
     | ToastMsg Toast.Msg
+    | OpenLayer Layer.Kind Layer.Id
+    | DismissLayer Layer.Id Layer.Dismissal
+    | LayerAction Layer.Id
 
 
 main : Program () Model Msg
 main =
-    Browser.sandbox { init = { dark = False, name = "", email = "", bio = "", role = "", alerts = True, saved = False, tab = "people", page = 1, details = Collapsible.init False, toasts = Toast.init }, update = update, view = view }
+    Browser.sandbox { init = { dark = False, name = "", email = "", bio = "", role = "", alerts = True, saved = False, tab = "people", page = 1, details = Collapsible.init False, toasts = Toast.init, layers = Layer.init }, update = update, view = view }
 
 
 update : Msg -> Model -> Model
@@ -100,6 +110,15 @@ update message model =
         ToastMsg childMsg ->
             { model | toasts = Toast.update childMsg model.toasts }
 
+        OpenLayer kind id ->
+            { model | layers = Layer.open kind id model.layers }
+
+        DismissLayer id reason ->
+            { model | layers = Layer.dismiss reason id model.layers }
+
+        LayerAction id ->
+            { model | layers = Layer.close id model.layers }
+
 
 view : Model -> Html Msg
 view model =
@@ -136,8 +155,50 @@ view model =
             , validatedForm model
             , settingsPage model
             , applicationStructure model
+            , overlayExamples model
             ]
         , Toast.view ToastMsg [] model.toasts
+        ]
+
+
+overlayExamples : Model -> Html Msg
+overlayExamples model =
+    demo "Overlays"
+        [ Stack.view [ Stack.horizontal, Stack.space "0.75rem", Stack.wrap ]
+            []
+            [ Button.view [ Button.secondary, Button.onClick (OpenLayer Layer.Modal "dialog-demo") ] [] [ text "Open dialog" ]
+            , Button.view [ Button.destructive, Button.onClick (OpenLayer Layer.Modal "alert-demo") ] [] [ text "Open alert" ]
+            , Tooltip.view
+                { id = "tooltip-demo"
+                , layers = model.layers
+                , trigger = \attributes -> button ([ Events.onMouseEnter (OpenLayer Layer.NonModal "tooltip-demo"), Events.onMouseLeave (DismissLayer "tooltip-demo" Layer.OutsideClick) ] ++ attributes) [ text "Tooltip" ]
+                , content = "Helpful detail"
+                , attributes = []
+                }
+            , Popover.view
+                { id = "popover-demo"
+                , layers = model.layers
+                , trigger = \attributes -> button (Events.onClick (OpenLayer Layer.NonModal "popover-demo") :: attributes) [ text "Popover" ]
+                , content = [ text "Non-modal supporting content." ]
+                , onDismiss = DismissLayer "popover-demo"
+                , attributes = []
+                }
+            , DropdownMenu.view
+                { id = "menu-demo"
+                , layers = model.layers
+                , trigger = \attributes -> button (Events.onClick (OpenLayer Layer.NonModal "menu-demo") :: attributes) [ text "Menu" ]
+                , items = [ { label = "Edit", onSelect = LayerAction "menu-demo", disabled = False }, { label = "Unavailable", onSelect = LayerAction "menu-demo", disabled = True } ]
+                , onDismiss = DismissLayer "menu-demo"
+                , attributes = []
+                }
+            , Button.view [ Button.ghost, Button.onClick (OpenLayer Layer.NonModal "context-demo") ] [] [ text "Context menu fixture" ]
+            ]
+        , Dialog.view
+            { id = "dialog-demo", layers = model.layers, title = "Edit profile", body = [ text "Dialog content remains application-owned." ], footer = [ button [ Events.onClick (LayerAction "dialog-demo") ] [ text "Done" ] ], onDismiss = DismissLayer "dialog-demo", attributes = [] }
+        , AlertDialog.view
+            { id = "alert-demo", layers = model.layers, title = "Delete item?", description = "This action cannot be undone.", cancelLabel = "Cancel", confirmLabel = "Delete", onCancel = LayerAction "alert-demo", onConfirm = LayerAction "alert-demo", attributes = [] }
+        , ContextMenu.view
+            { id = "context-demo", layers = model.layers, x = 32, y = 96, items = [ { label = "Inspect", onSelect = LayerAction "context-demo", disabled = False } ], onDismiss = DismissLayer "context-demo", attributes = [] }
         ]
 
 

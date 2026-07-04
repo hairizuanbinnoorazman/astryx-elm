@@ -61,6 +61,8 @@ library without custom structural components.
 
 ## Phase 5: shared overlay engine
 
+Status: complete.
+
 - Specify layer state, IDs, z-order, dismissal, and focus lifecycle.
 - Implement Dialog and AlertDialog first.
 - Validate focus entry/restoration, Escape, outside click, nested layers, and
