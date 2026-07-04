@@ -11,6 +11,7 @@ import Astryx.Calendar as Calendar
 import Astryx.Card as Card
 import Astryx.Carousel as Carousel
 import Astryx.Center as Center
+import Astryx.CircularProgress as CircularProgress
 import Astryx.Collapsible as Collapsible
 import Astryx.ContextMenu as ContextMenu
 import Astryx.Dialog as Dialog
@@ -37,6 +38,7 @@ import Astryx.Skeleton as Skeleton
 import Astryx.Stack as Stack
 import Astryx.Status as Status
 import Astryx.StatusDot as StatusDot
+import Astryx.Stepper as Stepper
 import Astryx.Table as Table
 import Astryx.Tabs as Tabs
 import Astryx.Text as Text
@@ -160,8 +162,22 @@ view model =
             , applicationStructure model
             , overlayExamples model
             , compositeExamples model
+            , specializedExamples
             ]
         , Toast.view ToastMsg [] model.toasts
+        ]
+
+
+specializedExamples : Html msg
+specializedExamples =
+    demo "Specialized components"
+        [ Stepper.view "Workspace setup"
+            []
+            [ { label = "Create workspace", description = Nothing, state = Stepper.Complete }
+            , { label = "Invite team", description = Just "Add at least one collaborator.", state = Stepper.Current }
+            , { label = "Choose a plan", description = Nothing, state = Stepper.Pending }
+            ]
+        , CircularProgress.view "Migration progress" 72 []
         ]
 
 

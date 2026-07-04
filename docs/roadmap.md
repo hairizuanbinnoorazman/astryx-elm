@@ -86,9 +86,15 @@ are covered by unit and browser tests.
 
 ## Phase 7: specialized packages
 
+Status: complete.
+
 Evaluate advanced Astryx Core and Lab components from usage evidence. Keep
 charts, Vega integration, and other domain-heavy features outside the core
 package so the dependency policy and API remain focused.
+
+The evaluation promoted dependency-free Stepper and CircularProgress modules.
+Domain-specific components remain deferred under the admission and package
+boundaries in [specialized package evaluation](specialized-packages.md).
 
 ## Cross-phase release rules
 

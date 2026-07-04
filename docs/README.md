@@ -18,6 +18,8 @@ does not mean recreating maintained community Elm packages without cause.
 - [Architecture](architecture.md) maps Astryx's React design to Elm APIs and
   defines the dependency and accessibility boundaries.
 - [Phased roadmap](roadmap.md) gives release gates and implementation order.
+- [Specialized package evaluation](specialized-packages.md) records the Phase 7
+  admission criteria and domain-package boundary.
 
 ## Reference projects
 

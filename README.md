@@ -3,7 +3,7 @@
 An Elm-native interpretation of the Astryx design system for building
 consistent, accessible application interfaces.
 
-> **Project status:** Phase 4 application structure complete.
+> **Project status:** All seven planned phases complete.
 
 ## Goal
 
@@ -18,7 +18,8 @@ provide a clear benefit and preserve Elm package guarantees.
 
 ## Available functionality
 
-The package exposes the foundations, essential controls, and application structure:
+The package exposes foundations, controls, application structure, overlays,
+composite inputs, and focused specialized components:
 
 - semantic theme tokens with light and dark themes
 - layout and typography foundations
@@ -26,18 +27,11 @@ The package exposes the foundations, essential controls, and application structu
 - buttons, links, forms, cards, status indicators, banners, and progress feedback
 - lists, tables, tabs, pagination, breadcrumbs, and loading/empty states
 - responsive application navigation plus collapsible and toast state machines
+- dialogs, menus, tooltips, selectors, date/time inputs, and media composites
+- stepper and circular progress components
 
-Later phases add controls and application components, including:
-
-- buttons, links, form controls, cards, status, and feedback components
-- application structure including tables, navigation, tabs, and pagination
-- explicit Elm state machines for interactive components
-- accessible HTML, keyboard behavior, focus handling, and reduced motion
-
-Overlays, composite inputs, and specialized components are intentionally later
-work because they require more extensive focus, keyboard, and browser behavior.
-See the [component priorities](docs/critical-ui-elements.md) for the full
-inventory.
+Domain-heavy components remain subject to the package boundary and admission
+criteria in the [specialized package evaluation](docs/specialized-packages.md).
 
 ## Minimal example
 
@@ -72,12 +66,12 @@ Theme.root Theme.light []
 Development is split into independently testable phases:
 
 1. Scope and contracts — complete.
-2. Package, theme, accessibility, layout, and documentation foundations.
-3. Essential controls, forms, cards, and feedback.
-4. Application layout and navigation components.
-5. Dialogs and a shared overlay model.
-6. Composite selectors and date/time inputs.
-7. Specialized components based on demonstrated demand.
+2. Package, theme, accessibility, layout, and documentation foundations — complete.
+3. Essential controls, forms, cards, and feedback — complete.
+4. Application layout and navigation components — complete.
+5. Dialogs and a shared overlay model — complete.
+6. Composite selectors and date/time inputs — complete.
+7. Specialized components based on demonstrated demand — complete.
 
 The detailed [roadmap](docs/roadmap.md), [architecture](docs/architecture.md),
 and [design plan](docs/README.md) define the acceptance gates for each phase.
