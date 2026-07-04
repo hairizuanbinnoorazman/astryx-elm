@@ -142,50 +142,63 @@ variables : Theme -> List (Attribute msg)
 variables theme =
     [ Attr.class "astryx-theme"
     , Attr.attribute "data-astryx-theme" theme.name
-    , Attr.style "color-scheme"
-        (if theme.name == "dark" then
-            "dark"
-
-         else
-            "light"
-        )
-    , token "background" theme.colors.background
-    , token "surface" theme.colors.surface
-    , token "surface-raised" theme.colors.surfaceRaised
-    , token "text" theme.colors.text
-    , token "text-muted" theme.colors.textMuted
-    , token "border" theme.colors.border
-    , token "focus" theme.colors.focus
-    , token "primary" theme.colors.primary
-    , token "on-primary" theme.colors.onPrimary
-    , token "info" theme.colors.info
-    , token "success" theme.colors.success
-    , token "warning" theme.colors.warning
-    , token "danger" theme.colors.danger
-    , token "space-xs" theme.spacing.xsmall
-    , token "space-sm" theme.spacing.small
-    , token "space-md" theme.spacing.medium
-    , token "space-lg" theme.spacing.large
-    , token "space-xl" theme.spacing.xlarge
-    , token "radius-sm" theme.radii.small
-    , token "radius-md" theme.radii.medium
-    , token "radius-lg" theme.radii.large
-    , token "radius-round" theme.radii.round
-    , token "shadow-low" theme.shadows.low
-    , token "shadow-medium" theme.shadows.medium
-    , token "shadow-high" theme.shadows.high
-    , token "motion-fast" theme.motion.fast
-    , token "motion-normal" theme.motion.normal
-    , token "motion-slow" theme.motion.slow
-    , token "easing" theme.motion.easing
-    , token "font" theme.typography.fontFamily
-    , token "font-mono" theme.typography.monoFamily
+    , Attr.attribute "style" (themeStyles theme)
     ]
 
 
-token : String -> String -> Attribute msg
-token name value =
-    Attr.style ("--astryx-" ++ name) value
+themeStyles : Theme -> String
+themeStyles theme =
+    [ ( "color-scheme"
+      , if theme.name == "dark" then
+            "dark"
+
+        else
+            "light"
+      )
+    , ( "background", theme.colors.background )
+    , ( "surface", theme.colors.surface )
+    , ( "surface-raised", theme.colors.surfaceRaised )
+    , ( "text", theme.colors.text )
+    , ( "text-muted", theme.colors.textMuted )
+    , ( "border", theme.colors.border )
+    , ( "focus", theme.colors.focus )
+    , ( "primary", theme.colors.primary )
+    , ( "on-primary", theme.colors.onPrimary )
+    , ( "info", theme.colors.info )
+    , ( "success", theme.colors.success )
+    , ( "warning", theme.colors.warning )
+    , ( "danger", theme.colors.danger )
+    , ( "space-xs", theme.spacing.xsmall )
+    , ( "space-sm", theme.spacing.small )
+    , ( "space-md", theme.spacing.medium )
+    , ( "space-lg", theme.spacing.large )
+    , ( "space-xl", theme.spacing.xlarge )
+    , ( "radius-sm", theme.radii.small )
+    , ( "radius-md", theme.radii.medium )
+    , ( "radius-lg", theme.radii.large )
+    , ( "radius-round", theme.radii.round )
+    , ( "shadow-low", theme.shadows.low )
+    , ( "shadow-medium", theme.shadows.medium )
+    , ( "shadow-high", theme.shadows.high )
+    , ( "motion-fast", theme.motion.fast )
+    , ( "motion-normal", theme.motion.normal )
+    , ( "motion-slow", theme.motion.slow )
+    , ( "easing", theme.motion.easing )
+    , ( "font", theme.typography.fontFamily )
+    , ( "font-mono", theme.typography.monoFamily )
+    ]
+        |> List.map
+            (\( name, value ) ->
+                (if name == "color-scheme" then
+                    name
+
+                 else
+                    "--astryx-" ++ name
+                )
+                    ++ ":"
+                    ++ value
+            )
+        |> String.join ";"
 
 
 {-| Package CSS as an Elm node. Render it once per document.

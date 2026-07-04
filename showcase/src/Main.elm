@@ -51,14 +51,22 @@ import Browser
 import Html exposing (Html, button, code, nav, section, span, text)
 import Html.Attributes as Attr
 import Html.Events as Events
+import LoginCard
 
 
 type alias Model =
-    { dark : Bool, name : String, email : String, bio : String, role : String, alerts : Bool, saved : Bool, tab : String, page : Int, details : Collapsible.State, toasts : Toast.State, layers : Layer.State }
+    { dark : Bool, pageView : Page, loginCard : LoginCard.Model, name : String, email : String, bio : String, role : String, alerts : Bool, saved : Bool, tab : String, page : Int, details : Collapsible.State, toasts : Toast.State, layers : Layer.State }
+
+
+type Page
+    = ComponentCatalog
+    | LoginCardTemplate
 
 
 type Msg
     = ToggleTheme
+    | ShowPage Page
+    | LoginCardMsg LoginCard.Msg
     | SetName String
     | SetEmail String
     | SetBio String
@@ -76,7 +84,7 @@ type Msg
 
 main : Program () Model Msg
 main =
-    Browser.sandbox { init = { dark = False, name = "", email = "", bio = "", role = "", alerts = True, saved = False, tab = "people", page = 1, details = Collapsible.init False, toasts = Toast.init, layers = Layer.init }, update = update, view = view }
+    Browser.sandbox { init = { dark = False, pageView = LoginCardTemplate, loginCard = LoginCard.init, name = "", email = "", bio = "", role = "", alerts = True, saved = False, tab = "people", page = 1, details = Collapsible.init False, toasts = Toast.init, layers = Layer.init }, update = update, view = view }
 
 
 update : Msg -> Model -> Model
@@ -84,6 +92,12 @@ update message model =
     case message of
         ToggleTheme ->
             { model | dark = not model.dark }
+
+        ShowPage page ->
+            { model | pageView = page }
+
+        LoginCardMsg childMsg ->
+            { model | loginCard = LoginCard.update childMsg model.loginCard }
 
         SetName value ->
             { model | name = value, saved = False }
@@ -134,37 +148,72 @@ view model =
          else
             Theme.light
         )
-        [ Attr.style "min-height" "100vh", Attr.style "padding" "var(--astryx-space-lg)" ]
+        [ Attr.style "min-height" "100vh" ]
         [ Theme.stylesheet
-        , Stack.view [ Stack.space "var(--astryx-space-lg)" ]
-            []
-            [ Heading.view Heading.h1 [] [ text "Astryx components" ]
-            , nav [] [ text "Foundation · Controls · Forms · Status · Feedback" ]
-            , button [ Events.onClick ToggleTheme ] [ text "Toggle light/dark theme" ]
-            , demo "Theme" [ Text.view Text.normal [] [ text "Semantic custom properties are inherited." ] ]
-            , demo "Accessibility"
-                [ Accessibility.liveRegion [] [ text "Polite live region" ]
-                , Accessibility.visuallyHidden [ text "Screen-reader-only content" ]
-                ]
-            , demo "Size and status"
-                [ code [] [ text (Size.toClass Size.Medium ++ " / " ++ Status.toString Status.Success) ] ]
-            , demo "Stack"
-                [ Stack.view [ Stack.horizontal, Stack.space "1rem", Stack.wrap ] [] [ tile "One", tile "Two", tile "Three" ] ]
-            , demo "Grid"
-                [ Grid.view [ Grid.minimumColumnWidth "10rem", Grid.space "1rem" ] [] [ tile "One", tile "Two", tile "Three" ] ]
-            , demo "Center"
-                [ Center.view [ Attr.style "min-height" "6rem", Attr.style "border" "1px solid var(--astryx-border)" ] [ text "Centered" ] ]
-            , demo "Typography"
-                [ Heading.view Heading.h3 [] [ text "Heading" ], Text.view Text.muted [] [ text "Muted supporting text" ] ]
-            , demo "Icon" [ Icon.view (Icon.labelled "Favorite" (span [] [ text "★" ])) ]
-            , validatedForm model
-            , settingsPage model
-            , applicationStructure model
-            , overlayExamples model
-            , compositeExamples model
-            , specializedExamples
-            ]
+        , templateNavigation model
+        , case model.pageView of
+            LoginCardTemplate ->
+                Html.map LoginCardMsg (LoginCard.view model.loginCard)
+
+            ComponentCatalog ->
+                componentCatalog model
         , Toast.view ToastMsg [] model.toasts
+        ]
+
+
+templateNavigation : Model -> Html Msg
+templateNavigation model =
+    nav
+        [ Attr.attribute "aria-label" "Showcase"
+        , Attr.style "display" "flex"
+        , Attr.style "gap" "var(--astryx-space-sm)"
+        , Attr.style "align-items" "center"
+        , Attr.style "padding" "var(--astryx-space-sm) var(--astryx-space-md)"
+        , Attr.style "border-bottom" "1px solid var(--astryx-border)"
+        ]
+        [ Button.view [ Button.ghost, Button.small, Button.onClick (ShowPage LoginCardTemplate) ] [ Attr.attribute "aria-current" (currentPage model LoginCardTemplate) ] [ text "Login Card" ]
+        , Button.view [ Button.ghost, Button.small, Button.onClick (ShowPage ComponentCatalog) ] [ Attr.attribute "aria-current" (currentPage model ComponentCatalog) ] [ text "Components" ]
+        , Button.view [ Button.secondary, Button.small, Button.onClick ToggleTheme ] [ Attr.style "margin-left" "auto" ] [ text "Toggle theme" ]
+        ]
+
+
+currentPage : Model -> Page -> String
+currentPage model page =
+    if model.pageView == page then
+        "page"
+
+    else
+        "false"
+
+
+componentCatalog : Model -> Html Msg
+componentCatalog model =
+    Stack.view [ Stack.space "var(--astryx-space-lg)" ]
+        [ Attr.style "padding" "var(--astryx-space-lg)" ]
+        [ Heading.view Heading.h1 [] [ text "Astryx components" ]
+        , nav [] [ text "Foundation · Controls · Forms · Status · Feedback" ]
+        , demo "Theme" [ Text.view Text.normal [] [ text "Semantic custom properties are inherited." ] ]
+        , demo "Accessibility"
+            [ Accessibility.liveRegion [] [ text "Polite live region" ]
+            , Accessibility.visuallyHidden [ text "Screen-reader-only content" ]
+            ]
+        , demo "Size and status"
+            [ code [] [ text (Size.toClass Size.Medium ++ " / " ++ Status.toString Status.Success) ] ]
+        , demo "Stack"
+            [ Stack.view [ Stack.horizontal, Stack.space "1rem", Stack.wrap ] [] [ tile "One", tile "Two", tile "Three" ] ]
+        , demo "Grid"
+            [ Grid.view [ Grid.minimumColumnWidth "10rem", Grid.space "1rem" ] [] [ tile "One", tile "Two", tile "Three" ] ]
+        , demo "Center"
+            [ Center.view [ Attr.style "min-height" "6rem", Attr.style "border" "1px solid var(--astryx-border)" ] [ text "Centered" ] ]
+        , demo "Typography"
+            [ Heading.view Heading.h3 [] [ text "Heading" ], Text.view Text.muted [] [ text "Muted supporting text" ] ]
+        , demo "Icon" [ Icon.view (Icon.labelled "Favorite" (span [] [ text "★" ])) ]
+        , validatedForm model
+        , settingsPage model
+        , applicationStructure model
+        , overlayExamples model
+        , compositeExamples model
+        , specializedExamples
         ]
 
 
